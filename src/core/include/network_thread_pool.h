@@ -1,11 +1,11 @@
 // Copyright 2016 Chirstopher Torres (Raven), L3nn0x
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 // http ://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,13 +14,13 @@
 
 #ifndef _thread_pool_h_
 #define _thread_pool_h_
-#include <thread>
+#include "thread_pool.h"
 #include <asio.hpp>
-#include <queue>
-#include <mutex>
 #include <atomic>
 #include <bitset>
-#include "threadpool.h"
+#include <mutex>
+#include <queue>
+#include <thread>
 
 namespace Core {
 #define MAX_NETWORK_THREADS 512
@@ -29,30 +29,14 @@ class NetworkThreadPool {
   typedef std::unique_ptr<asio::io_context::work> asio_worker;
 
  public:
-  static NetworkThreadPool& GetInstance(uint16_t maxthreads = 0) {
-    if (instance_ == nullptr) instance_ = new NetworkThreadPool(maxthreads);
-    return *instance_;
-  }
-
-  static void DeleteInstance() {
-    if (instance_ != nullptr) {
-      delete instance_;
-      instance_ = nullptr;
-    }
-  }
-
-  asio::io_context* Get_IO_Service() { return &io_service_; }
-  uint16_t GetThreadCount() const { return static_cast<uint16_t>(threads_active_.count()); }
-
- private:
-  NetworkThreadPool(uint16_t maxthreads) : io_work_(new asio_worker::element_type(io_service_)), 
-    pool( std::thread::hardware_concurrency() ) {
+  NetworkThreadPool(uint16_t max_threads)
+      : io_work(new asio_worker::element_type(io_service)),
+        pool(std::thread::hardware_concurrency()) {
     uint16_t core_count = std::thread::hardware_concurrency()
-               ? std::thread::hardware_concurrency()
-               : 1;
+                              ? std::thread::hardware_concurrency()
+                              : 1;
 
-    if(maxthreads != 0 && core_count > maxthreads)
-      core_count = maxthreads;
+    if (max_threads != 0 && core_count > max_threads) core_count = max_threads;
 
     if (core_count > MAX_NETWORK_THREADS)
       core_count = MAX_NETWORK_THREADS;
@@ -65,27 +49,30 @@ class NetworkThreadPool {
     }
   }
 
-  ~NetworkThreadPool() { Shutdown(); }
-
-  void Shutdown() {
-    threads_active_.reset();
-    io_work_.reset();
-    io_service_.stop();
+  ~NetworkThreadPool() { shutdown(); }
+  asio::io_context* get_io_service() { return &io_service; }
+  uint16_t get_thread_count() const {
+    return static_cast<uint16_t>(threads_active.count());
   }
 
-  NetworkThreadPool& operator()(uint32_t _id) {
-    io_service_.run_one();
-    if( threads_active_.test(_id) ) 
-      pool.enqueue([this, _id]() { (*this)(_id); });
+ private:
+  void shutdown() {
+    threads_active.reset();
+    io_work.reset();
+    io_service.stop();
+  }
+
+  NetworkThreadPool& operator()(uint32_t id) {
+    io_service.run_one();
+    if (threads_active.test(id)) pool.enqueue([this, id]() { (*this)(id); });
     return *this;
   }
 
-  std::bitset<MAX_NETWORK_THREADS> threads_active_;
-  asio::io_context io_service_;
-  asio_worker io_work_;
+  std::bitset<MAX_NETWORK_THREADS> threads_active;
+  asio::io_context io_service;
+  asio_worker io_work;
   ThreadPool pool;
-  static NetworkThreadPool* instance_;
 };
-}
+}  // namespace Core
 
 #endif  // __thread_pool_h__
