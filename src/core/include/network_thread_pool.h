@@ -12,6 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+/*!
+ *  \file network_thread_pool.h
+ *
+ *  \author Raven
+ *  \date march 2016
+ *
+ *  The network thread pool
+ */
+
 #ifndef _thread_pool_h_
 #define _thread_pool_h_
 #include "thread_pool.h"
@@ -25,10 +34,20 @@
 namespace Core {
 #define MAX_NETWORK_THREADS 512
 
+/*!
+ * \class NetworkThreadPool
+ *
+ * \brief This class is used to spawn a network thread pool that handles all of the work that comes to and from the network.
+ */
+
 class NetworkThreadPool {
   typedef std::unique_ptr<asio::io_context::work> asio_worker;
 
  public:
+  /*!
+   * \brief Forces a maximum amount of threads when launching the pool
+   * \param[in] maximum number of threads
+   */
   NetworkThreadPool(uint16_t max_threads)
       : io_work(new asio_worker::element_type(io_service)),
         pool(std::thread::hardware_concurrency()) {
@@ -50,7 +69,13 @@ class NetworkThreadPool {
   }
 
   ~NetworkThreadPool() { shutdown(); }
+  /*!
+   * \brief get the io_service
+   */
   asio::io_context* get_io_service() { return &io_service; }
+  /*!
+   * \brief Get the number of active threads
+   */
   uint16_t get_thread_count() const {
     return static_cast<uint16_t>(threads_active.count());
   }
