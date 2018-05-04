@@ -5,7 +5,7 @@ set(PROJECT Core)
 project(${PROJECT})
 
 set( SOURCES_HEADER
-  include/threadpool
+  include/thread_pool
   include/logconsole
   include/cnetwork_asio
   include/config
