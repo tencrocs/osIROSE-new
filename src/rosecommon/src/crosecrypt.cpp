@@ -195,7 +195,7 @@ bool PacketCodec::decodeServerBody(unsigned char* buffer) {
 bool PacketCodec::decodeClientBody(unsigned char* buffer) {
   Head head;
   memset(&head, 0, sizeof(head));
-  memcpy(&head, buffer, 6);
+  memcpy(&head, buffer, sizeof(head));
   unsigned short buflen =
       (unsigned short)(head.AddBufferLen - head.EncryptValue);
 
