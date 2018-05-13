@@ -11,18 +11,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <chrono>
 #include <cxxopts.hpp>
-#include "crash_report.h"
-#include "cloginserver.h"
 #include "config.h"
-#include "logconsole.h"
 #include "version.h"
+#include "logconsole.h"
 #include "network_thread_pool.h"
-
 #include "connection.h"
 #include "mysqlconnection.h"
+#include "crash_report.h"
 
-#include <chrono>
+#include "cloginserver.h"
 
 namespace {
 void DisplayTitle()
@@ -166,8 +165,8 @@ void deleteStaleSessions() {
     return;
   time = Core::Time::GetTickCount();
   auto conn = Core::connectionPool.getConnection(Core::osirose);
-  Core::SessionTable session;
-  Core::AccountTable table;
+  Core::SessionTable session{};
+  Core::AccountTable table{};
   conn(sqlpp::update(table.join(session).on(table.id == session.userid)).set(table.online = 0).where(session.time < floor<std::chrono::minutes>(std::chrono::system_clock::now()) - 5min));
   conn(sqlpp::remove_from(session).where(session.time < floor<std::chrono::minutes>(std::chrono::system_clock::now()) - 5min));
 }

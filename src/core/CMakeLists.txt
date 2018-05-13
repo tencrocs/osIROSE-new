@@ -43,9 +43,9 @@ else()
   list(APPEND SOURCES_HEADER
     include/win32/crash_report.h
   )
-#  list(APPEND SOURCES_BASE
-#    src/win32/crash_report
-#  )
+  list(APPEND SOURCES_BASE
+    src/win32/crash_report
+  )
 endif()
 
 
@@ -86,10 +86,6 @@ endif()
 
 if (WITH_MYSQL)
   target_link_libraries(${PROJECT} sqlpp-mysql)
-endif()
-
-if(WIN32)
-  set_target_properties(${PROJECT} PROPERTIES COTIRE_ENABLE_PRECOMPILED_HEADER FALSE)
 endif()
 
 if (COMMAND cotire)
