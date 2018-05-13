@@ -20,7 +20,7 @@
 
 class CMapServer : public RoseCommon::CRoseServer {
  public:
-  CMapServer(bool _isc = false, int16_t mapidx = -1);
+  CMapServer(std::unique_ptr<Core::INetwork> sock, bool _isc = false, int16_t mapidx = -1);
   virtual ~CMapServer();
 
   int32_t GetMapIDX() const { return map_idx_; }

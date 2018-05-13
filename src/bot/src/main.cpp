@@ -367,9 +367,9 @@ int main(int argc, char* argv[]) {
     auto log = console.lock();
     log->info( "Starting up client..." );
 
-    Core::NetworkThreadPool::GetInstance(1);
+    Core::NetworkThreadPool threadPool{1};
 
-    auto socket = std::make_unique<Core::CNetwork_Asio>();
+    auto socket = std::make_unique<Core::CNetwork_Asio>(&threadPool);
     socket->init(ip, loginPort);
     log->info("Connecting to login server");
     LoginClient loginClient{std::move(socket)};
@@ -380,7 +380,7 @@ int main(int argc, char* argv[]) {
 
     if (loginClient.ip().size()) {
         log->info("Connecting to char server");
-        socket = std::make_unique<Core::CNetwork_Asio>();
+        socket = std::make_unique<Core::CNetwork_Asio>(&threadPool);
         socket->init(loginClient.ip(), loginClient.port());
         CharClient charClient{loginClient.sessionId(), std::move(socket)};
         charClient.connect();
@@ -390,7 +390,7 @@ int main(int argc, char* argv[]) {
 
         if (charClient.ip().size()) {
           log->info("Connecting to map server");
-          socket = std::make_unique<Core::CNetwork_Asio>();
+          socket = std::make_unique<Core::CNetwork_Asio>(&threadPool);
           socket->init(charClient.ip(), charClient.port());
           MapClient mapClient{charClient.sessionId(), charClient.sessionSeed(), std::move(socket)};
           mapClient.connect();

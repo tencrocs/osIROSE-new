@@ -180,7 +180,7 @@ int main(int argc, char* argv[]) {
     log->trace("Trace logs are enabled.");
     log->debug("Debug logs are enabled.");
   }
-  Core::NetworkThreadPool::GetInstance(config.serverData().maxThreads);
+  Core::NetworkThreadPool threadPool{config.serverData().maxThreads};
 
   Core::connectionPool.addConnector(Core::osirose, std::bind(
             Core::mysqlFactory,
@@ -190,9 +190,9 @@ int main(int argc, char* argv[]) {
             config.database().host,
             config.database().port));
 
-  CCharServer clientServer;
-  CCharServer iscServer(true);
-  CCharISC* iscClient = new CCharISC(std::make_unique<Core::CNetwork_Asio>());
+  CCharServer clientServer{std::make_unique<Core::CNetwork_Asio>(&threadPool)};
+  CCharServer iscServer(std::make_unique<Core::CNetwork_Asio>(&threadPool), true);
+  CCharISC* iscClient = new CCharISC(std::make_unique<Core::CNetwork_Asio>(&threadPool));
   iscClient->init(config.charServer().loginIp, config.loginServer().iscPort);
   iscClient->SetLogin(true);
   iscClient->connect();

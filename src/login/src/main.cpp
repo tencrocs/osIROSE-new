@@ -194,7 +194,7 @@ int main(int argc, char* argv[]) {
       log->debug("Debug logs are enabled.");
     }
 
-    Core::NetworkThreadPool::GetInstance(config.serverData().maxThreads);
+    Core::NetworkThreadPool threadPool{config.serverData().maxThreads};
 
     Core::connectionPool.addConnector(Core::osirose, std::bind(
                 Core::mysqlFactory,
@@ -204,8 +204,8 @@ int main(int argc, char* argv[]) {
                 config.database().host,
                 config.database().port));
 
-    CLoginServer clientServer;
-    CLoginServer iscServer(true);
+    CLoginServer clientServer{std::make_unique<Core::CNetwork_Asio>(&threadPool)};
+    CLoginServer iscServer{std::make_unique<COre::CNetwork_Asio>(&threadPool), true};
 
     clientServer.init(config.serverData().ip, config.loginServer().clientPort);
     clientServer.listen();
@@ -220,7 +220,6 @@ int main(int argc, char* argv[]) {
 
     if(auto log = console.lock())
       log->info( "Server shutting down..." );
-    Core::NetworkThreadPool::DeleteInstance();
     spdlog::drop_all();
 
   }

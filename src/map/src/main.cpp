@@ -180,7 +180,7 @@ int main(int argc, char* argv[]) {
       log->trace("Trace logs are enabled.");
       log->debug("Debug logs are enabled.");
     }
-    Core::NetworkThreadPool::GetInstance(config.serverData().maxThreads);
+  Core::NetworkThreadPool threadPool{config.serverData().maxThreads};
 
   Core::connectionPool.addConnector(Core::osirose, std::bind(
                 Core::mysqlFactory,
@@ -191,9 +191,9 @@ int main(int argc, char* argv[]) {
                 config.database().port));
 
 
-  CMapServer clientServer;
-  CMapServer iscServer(true);
-  CMapISC* iscClient = new CMapISC(std::make_unique<Core::CNetwork_Asio>());
+  CMapServer clientServer{std::make_unique<Core::CNetwork_Asio>(&threadPool)};
+  CMapServer iscServer(std::make_unique<Core::CNetwork_Asio>(&threadPool), true};
+  CMapISC* iscClient = new CMapISC(std::make_unique<Core::CNetwork_Asio>(&threadPool));
   iscClient->init(config.mapServer().charIp, config.charServer().iscPort);
   iscClient->set_type(to_underlying(RoseCommon::Isc::ServerType::CHAR));
 

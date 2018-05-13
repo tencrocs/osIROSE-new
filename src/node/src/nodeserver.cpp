@@ -19,7 +19,7 @@
 #include "config.h"
 #include "platform_defines.h"
 
-NodeServer::NodeServer(bool _isc) : CRoseServer(_isc), client_count_(0), server_count_(0) {
+NodeServer::NodeServer(std::unique_ptr<Core::Inetwork> sock, bool _isc) : CRoseServer(std::move(sock), _isc), client_count_(0), server_count_(0) {
 }
 
 NodeServer::~NodeServer() { socket_->shutdown(true); }

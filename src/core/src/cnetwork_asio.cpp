@@ -29,13 +29,11 @@
 
 namespace Core {
 
-NetworkThreadPool* NetworkThreadPool::instance_ = nullptr;
-
-CNetwork_Asio::CNetwork_Asio()
+CNetwork_Asio::CNetwork_Asio(NetworkThreadPool *threadPool)
     : INetwork(),
-      networkService_(&NetworkThreadPool::GetInstance()),
-      socket_(*networkService_->Get_IO_Service()),
-      listener_(*networkService_->Get_IO_Service()),
+      networkService_(threadPool),
+      socket_(*networkService_->get_io_service()),
+      listener_(*networkService_->get_io_service()),
       packet_offset_(0),
       packet_size_(6),
       active_(false),
@@ -95,7 +93,7 @@ bool CNetwork_Asio::shutdown(bool _final) {
 }
 
 bool CNetwork_Asio::connect() {
-  tcp::resolver resolver(*networkService_->Get_IO_Service());
+  tcp::resolver resolver(*networkService_->get_io_service());
   auto endpoint_iterator =
       resolver.resolve(network_address_, std::to_string(network_port_));
 
@@ -299,7 +297,7 @@ void CNetwork_Asio::AcceptConnection() {
         // Do something here for the new connection.
         // Make sure to use std::move(socket)
         // std::make_shared<CClientSesson>( std::move(socket) );
-        auto nSock = std::make_unique<CNetwork_Asio>();
+        auto nSock = std::make_unique<CNetwork_Asio>(this->networkService_);
         nSock->set_address(socket.remote_endpoint().address().to_string());
         nSock->SetSocket(std::move(socket));
         nSock->set_active(true);

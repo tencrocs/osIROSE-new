@@ -20,7 +20,7 @@
 
 using namespace RoseCommon;
 
-CCharServer::CCharServer(bool _isc) : CRoseServer(_isc), client_count_(0), server_count_(0) {
+CCharServer::CCharServer(std::unique_ptr<Core::INetwork> sock, bool _isc) : CRoseServer(std::move(sock), _isc), client_count_(0), server_count_(0) {
 }
 
 CCharServer::~CCharServer() { socket_->shutdown(); }

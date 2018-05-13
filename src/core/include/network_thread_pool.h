@@ -63,7 +63,7 @@ class NetworkThreadPool {
       core_count = 1;
 
     for (uint32_t idx = 0; idx < core_count; ++idx) {
-      threads_active_.set(idx);
+      threads_active.set(idx);
       pool.enqueue([this, idx]() { (*this)(idx); });
     }
   }

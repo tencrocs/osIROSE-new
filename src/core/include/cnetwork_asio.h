@@ -64,7 +64,7 @@ namespace Core {
  */
 class CNetwork_Asio : public INetwork {
  public:
-  CNetwork_Asio();
+  CNetwork_Asio(NetworkThreadPool *threadPool);
   virtual ~CNetwork_Asio();
 
   virtual bool init(std::string _ip, uint16_t _port) override;

@@ -14,12 +14,13 @@ using namespace RoseCommon;
 TEST(TestFinalServers, TestISCConnections) {
   CLoginServer loginIsc(true);
   CCharServer charIsc(true);
+  CNetworkThreadPool threadPool{};
   std::unique_ptr<CCharISC> charIscClient = std::make_unique<CCharISC>();
   CMapServer mapIsc(true);
   std::unique_ptr<CMapISC> mapIscClient = std::make_unique<CMapISC>();
 
-  charIscClient->set_socket(std::make_unique<Core::CNetwork_Asio>());
-  mapIscClient->set_socket(std::make_unique<Core::CNetwork_Asio>());
+  charIscClient->set_socket(std::make_unique<Core::CNetwork_Asio>(&threadPool));
+  mapIscClient->set_socket(std::make_unique<Core::CNetwork_Asio>(&threadPool));
 
   loginIsc.init("127.0.0.1", 29010);
 

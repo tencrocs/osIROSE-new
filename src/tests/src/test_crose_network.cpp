@@ -152,7 +152,8 @@ TEST(TestRoseNetwork, TestListenAndConnect) {
 
   CRoseServer network;
   CRoseClient netConnect;
-  netConnect.set_socket(std::make_unique<Core::CNetwork_Asio>());
+  CNetworkThreadPool threadPool{};
+  netConnect.set_socket(std::make_unique<Core::CNetwork_Asio>(&threadPool));
   EXPECT_EQ(true, network.init(
                       "127.0.0.1",
                       29100));  // We are going to connect to google's website
@@ -193,8 +194,9 @@ TEST(TestRoseNetwork, TestListenAndConnect) {
 TEST(TestRoseNetwork, TestListenAndConnect2) {
   CRoseServer network;
   CRoseClient netConnect;
+  CNetworkThreadPool threadPool{};
 
-  netConnect.set_socket(std::make_unique<Core::CNetwork_Asio>());
+  netConnect.set_socket(std::make_unique<Core::CNetwork_Asio>(&threadPool));
   EXPECT_EQ(true, network.init("127.0.0.1", 29110));
   EXPECT_NO_FATAL_FAILURE(network.listen());
 
@@ -231,7 +233,8 @@ TEST(TestRoseNetwork, TestISCListenAndConnect) {
 
   CRoseServer network(true);
   CRoseISC netConnect;
-  netConnect.set_socket(std::make_unique<Core::CNetwork_Asio>());
+  CNetworkThreadPool threadPool{};
+  netConnect.set_socket(std::make_unique<Core::CNetwork_Asio>(&threadPool));
   EXPECT_EQ(true, network.init(
                       "127.0.0.1",
                       29110));  // We are going to connect to google's website

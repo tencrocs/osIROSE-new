@@ -19,7 +19,7 @@
 
 class CCharServer : public RoseCommon::CRoseServer {
  public:
-  CCharServer(bool _isc = false);
+  CCharServer(std::unique_ptr<Core::INetwork> sock, bool _isc = false);
   virtual ~CCharServer();
 
  protected:

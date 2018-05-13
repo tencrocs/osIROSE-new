@@ -9,6 +9,7 @@ using ::testing::Invoke;
 #include "cnetwork_asio.h"
 class CNetwork_Asio_Mock : public Core::CNetwork_Asio {
  public:
+     CNetwork_Asio_Mock(NetworkThreadPool*) = default;
   /*CNetwork_Asio_Mock()
   {
           ON_CALL(*this, OnConnected())

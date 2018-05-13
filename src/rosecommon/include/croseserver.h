@@ -24,7 +24,7 @@ namespace RoseCommon {
 
 class CRoseServer : public CRoseSocket {
  public:
-  CRoseServer(bool _iscServer = false);
+  CRoseServer(std::unique_ptr<Core::INetwork> socket, bool _iscServer = false);
   virtual ~CRoseServer();
 
   bool IsISCServer() const { return isc_server_; }

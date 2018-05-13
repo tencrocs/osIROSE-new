@@ -30,7 +30,7 @@ std::forward_list<std::shared_ptr<CRoseClient>> CRoseServer::isc_list_;
 std::mutex CRoseServer::client_list_mutex_;
 std::mutex CRoseServer::isc_list_mutex_;
 
-CRoseServer::CRoseServer(bool _iscServer) : CRoseSocket(std::make_unique<Core::CNetwork_Asio>()),
+CRoseServer::CRoseServer(std::unique_ptr<Core::INetwork> sock, bool _iscServer) : CRoseSocket(std::move(sock)),
   isc_server_(_iscServer) {
 
   std::function<void(std::unique_ptr<Core::INetwork>)> fnOnAccepted = std::bind(&CRoseServer::OnAccepted, this, std::placeholders::_1);

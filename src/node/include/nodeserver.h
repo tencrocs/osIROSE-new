@@ -19,7 +19,7 @@
 
 class NodeServer : public RoseCommon::CRoseServer {
  public:
-   NodeServer(bool _isc = false);
+   NodeServer(std::unique_ptr<Core::INetwork> sock, bool _isc = false);
   virtual ~NodeServer();
 
   // This will give you the count of the clients in the list

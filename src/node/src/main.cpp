@@ -247,7 +247,7 @@ int main(int argc, char* argv[]) {
       log->debug("Debug logs are enabled.");
     }
 
-    Core::NetworkThreadPool::GetInstance(config.serverData().maxThreads);
+    Core::NetworkThreadPool threadPool{config.serverData().maxThreads};
     std::string ip_addr = config.serverData().ip;
     if( true == config.serverData().autoConfigureAddress )
     {
@@ -258,9 +258,9 @@ int main(int argc, char* argv[]) {
       }
     }
 
-    NodeServer loginServer;
-    NodeServer charServer;
-    NodeServer mapServer;
+    NodeServer loginServer{std::make_unique<Core::CNetwork_Asio>(&threadPool)};
+    NodeServer charServer{std::make_unique<Core::CNetwork_Asio>(&threadPool)};
+    NodeServer mapServer{std::make_unique<Core::CNetwork_Asio>(&threadPool)};
 
     loginServer.init(ip_addr, config.loginServer().clientPort);
     loginServer.listen();
@@ -277,7 +277,6 @@ int main(int argc, char* argv[]) {
 
     if(auto log = console.lock())
       log->info( "Server shutting down..." );
-    Core::NetworkThreadPool::DeleteInstance();
     spdlog::drop_all();
 
   }
