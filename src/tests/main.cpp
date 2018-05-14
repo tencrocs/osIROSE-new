@@ -21,11 +21,11 @@ int main(int argc, char *argv[]) {
 
   // Some tests run all 3 servers and they do not like it when they have too many threads.
   // Use the max concurrent count that way each server has the same amount of time.
-  Core::NetworkThreadPool::GetInstance( std::thread::hardware_concurrency() );
+  //Core::NetworkThreadPool::GetInstance( std::thread::hardware_concurrency() );
 
   int ret_val = RUN_ALL_TESTS();
   spdlog::drop_all();
-  Core::NetworkThreadPool::DeleteInstance();
+  //Core::NetworkThreadPool::DeleteInstance();
 
   int unexpectedly_failed_tests = 0;
   for (int i = 0; i < unit_test.total_test_case_count(); ++i) {
