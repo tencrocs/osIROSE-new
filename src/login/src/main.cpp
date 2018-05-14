@@ -17,7 +17,7 @@
 #include "version.h"
 #include "logconsole.h"
 #include "network_thread_pool.h"
-#include "network_asio.h"
+#include "cnetwork_asio.h"
 #include "connection.h"
 #include "mysqlconnection.h"
 #include "crash_report.h"
