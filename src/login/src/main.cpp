@@ -17,6 +17,7 @@
 #include "version.h"
 #include "logconsole.h"
 #include "network_thread_pool.h"
+#include "network_asio.h"
 #include "connection.h"
 #include "mysqlconnection.h"
 #include "crash_report.h"
@@ -133,7 +134,6 @@ void ParseCommandLine(int argc, char** argv)
     if( options.count("max_threads") ) 
     {
       config.serverData().maxThreads = options["max_threads"].as<int>();
-      Core::NetworkThreadPool::GetInstance(config.serverData().maxThreads);
     }
     
     if( options.count("core_path") )
@@ -194,7 +194,7 @@ int main(int argc, char* argv[]) {
       log->debug("Debug logs are enabled.");
     }
 
-    Core::NetworkThreadPool threadPool{config.serverData().maxThreads};
+    Core::NetworkThreadPool threadPool{static_cast<uint16_t>(config.serverData().maxThreads)};
 
     Core::connectionPool.addConnector(Core::osirose, std::bind(
                 Core::mysqlFactory,
@@ -205,7 +205,7 @@ int main(int argc, char* argv[]) {
                 config.database().port));
 
     CLoginServer clientServer{std::make_unique<Core::CNetwork_Asio>(&threadPool)};
-    CLoginServer iscServer{std::make_unique<COre::CNetwork_Asio>(&threadPool), true};
+    CLoginServer iscServer{std::make_unique<Core::CNetwork_Asio>(&threadPool), true};
 
     clientServer.init(config.serverData().ip, config.loginServer().clientPort);
     clientServer.listen();
