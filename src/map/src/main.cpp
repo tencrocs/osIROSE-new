@@ -135,7 +135,6 @@ void ParseCommandLine(int argc, char** argv)
     if( options.count("max_threads") ) 
     {
       config.serverData().maxThreads = options["max_threads"].as<int>();
-      Core::NetworkThreadPool::GetInstance(config.serverData().maxThreads);
     }
     
     if( options.count("core_path") )
@@ -180,7 +179,7 @@ int main(int argc, char* argv[]) {
       log->trace("Trace logs are enabled.");
       log->debug("Debug logs are enabled.");
     }
-  Core::NetworkThreadPool threadPool{config.serverData().maxThreads};
+  Core::NetworkThreadPool threadPool{static_cast<uint16_t>(config.serverData().maxThreads)};
 
   Core::connectionPool.addConnector(Core::osirose, std::bind(
                 Core::mysqlFactory,
