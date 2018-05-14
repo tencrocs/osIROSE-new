@@ -19,7 +19,7 @@
 
 class CLoginServer : public RoseCommon::CRoseServer {
  public:
-  CLoginServer(bool _isc = false);
+  CLoginServer(std::unique_ptr<Core::INetwork> sock, bool _isc = false);
   virtual ~CLoginServer();
 
   // This will give you the count of the clients in the list
