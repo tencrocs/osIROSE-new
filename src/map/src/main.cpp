@@ -215,7 +215,6 @@ int main(int argc, char* argv[]) {
 
     if(auto log = console.lock())
       log->info( "Server shutting down..." );
-    Core::NetworkThreadPool::DeleteInstance();
     spdlog::drop_all();
   }
   catch (const spdlog::spdlog_ex& ex) {
