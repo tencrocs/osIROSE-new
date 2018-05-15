@@ -191,7 +191,7 @@ int main(int argc, char* argv[]) {
 
 
   CMapServer clientServer{std::make_unique<Core::CNetwork_Asio>(&threadPool)};
-  CMapServer iscServer(std::make_unique<Core::CNetwork_Asio>(&threadPool), true};
+  CMapServer iscServer{std::make_unique<Core::CNetwork_Asio>(&threadPool), true};
   CMapISC* iscClient = new CMapISC(std::make_unique<Core::CNetwork_Asio>(&threadPool));
   iscClient->init(config.mapServer().charIp, config.charServer().iscPort);
   iscClient->set_type(to_underlying(RoseCommon::Isc::ServerType::CHAR));
